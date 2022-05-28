@@ -3,11 +3,11 @@
     <nav class="container">
       <div class="branding">
         <router-link class="header" :to="{ name: 'Home' }">
-          DevIdeas
+          DevBlogFolio
         </router-link>
       </div>
       <div class="nav-links">
-        <ul>
+        <ul v-show="!mobile">
           <router-link class="link" to="#">Home</router-link>
           <router-link class="link" to="#">Projects</router-link>
           <router-link class="link" to="#">Blogs</router-link>
@@ -16,9 +16,9 @@
         </ul>
       </div>
     </nav>
-    <menuIcon class="menu-icon"/>
+    <menuIcon @click="toggleMobileNav" class="menu-icon" v-show="mobile"/>
     <transition name="mobile-nav">
-      <ul class="mobile-nav">
+      <ul class="mobile-nav" v-show="mobileNav">
         <router-link class="link" to="#">Home</router-link>
         <router-link class="link" to="#">Projects</router-link>
         <router-link class="link" to="#">Blogs</router-link>
@@ -41,6 +41,28 @@ export default {
       mobile: null,
       mobileNav: null,
       windowWidth: null
+    }
+  },
+  created() {
+    // add event listener when the component gets created
+    // and listen for the resize event, then execute the method.
+    window.addEventListener('resize', this.checkScreen);
+    // also check the screen when the component is first created
+    this.checkScreen();
+  },
+  methods: {
+    checkScreen() {
+      this.windowWidth = window.innerWidth;
+      if (this.windowWidth <= 850) {
+        this.mobile = true;
+        return;
+      }
+      this.mobile = false;
+      this.mobileNav = false;
+      return;
+    },
+    toggleMobileNav() {
+      this.mobileNav = !this.mobileNav;
     }
   },
 };
@@ -127,5 +149,23 @@ header {
       color: #fff;
     }
   }
+
+  .mobile-nav-enter-active,
+  .mobile-nav-leave-active {
+    transition: all 1s ease;
+  }
+
+  .mobile-nav-enter {
+    transform: translateX(-250px);
+  }
+
+  .mobile-nav-enter-to {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-leave-to {
+    transform: translateX(-250px);
+  }
+
 }
 </style>
