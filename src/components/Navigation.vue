@@ -82,7 +82,7 @@ header {
     transition: 0.3s color ease;
 
     &:hover {
-      color: #1eb8b8;
+      color: #1eb863;
     }
   }
 
@@ -97,7 +97,7 @@ header {
       .header {
         font-weight: 600;
         font-size: 24px;
-        color: #000;
+        color: #1eb863;
         text-decoration: none;
       }
     }
