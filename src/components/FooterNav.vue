@@ -101,11 +101,17 @@ footer {
       .header {
         text-align: center;
         font-size: 24px;
+        max-width: 50%;
         color: #fff;
         text-decoration: none;
         font-weight: 600;
+
         @media (min-width: 850px) {
           text-align: initial;
+        }
+
+        &:hover {
+          color: #1eb863;
         }
       }
 
@@ -146,6 +152,10 @@ footer {
               width: 24px;
               height: auto;
               color: #fff;
+
+              &:hover {
+                color: #1eb863;
+              }
             }
           }
         }
@@ -166,6 +176,10 @@ footer {
             font-weight: 500;
             color: #fff;
             text-decoration: none;
+
+            &:hover {
+              color: #1eb863;
+            }
           }
         }
       }
