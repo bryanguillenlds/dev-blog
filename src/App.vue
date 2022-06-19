@@ -1,9 +1,9 @@
 <template>
   <div class="app-wrapper">
     <div class="app">
-      <Navigation />
+      <Navigation v-if="!isNavDisabled"/>
       <router-view />
-      <FooterNav />
+      <FooterNav v-if="!isNavDisabled"/>
     </div>
   </div>
 </template>
@@ -16,12 +16,28 @@ export default {
   name: "app",
   components: { Navigation, FooterNav },
   data() {
-    return {};
+    return {
+      isNavDisabled: null
+    };
   },
-  created() {},
+  created() {
+    this.toggleNavBar();
+  },
   mounted() {},
-  methods: {},
-  watch: {},
+  methods: {
+    toggleNavBar() {
+      if(this.$route.name === 'Login' || this.$route.name === 'Register' || this.$route.name === 'ForgotPassword') {
+        this.isNavDisabled = true;
+        return;
+      }
+      this.isNavDisabled = false;
+    }
+  },
+  watch: {
+    $route() {
+      this.toggleNavBar(); //run it whenever the route changes
+    }
+  },
 };
 </script>
 
