@@ -27,8 +27,11 @@
           <input type="password" placeholder="Password" v-model="password">
           <Password class="icon"/>
         </div>
+        <div v-show="error" class="error">
+          {{this.errorMsg}}
+        </div>
       </div>
-      <button>Sign Up</button>
+      <button @click.prevent="register">Sign Up</button>
       <div class="angle"></div>
     </form>
     <div class="background"></div>
@@ -38,7 +41,10 @@
 <script>
 import Email from '../assets/Icons/envelope-regular.svg';
 import Password from '../assets/Icons/lock-alt-solid.svg';
-import User from '../assets/Icons/user-alt-light.svg'
+import User from '../assets/Icons/user-alt-light.svg';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import db from '../firebase/firebaseInit.js';
 
 export default {
   name: 'Register',
@@ -54,10 +60,48 @@ export default {
       username: "",
       email: "",
       password: "",
-      // error: null,
-      // errorMsg: "",
+      error: null,
+      errorMsg: "",
     };
   },
+  methods: {
+    async register() {
+      if (
+          this.email !== "" &&
+          this.password !== "" &&
+          this.firstName !== "" &&
+          this.lastName !== "" &&
+          this.username !== ""
+      ) {
+        //clear errors
+        this.error = false;
+        this.errorMsg = "";
+
+        //create account with firebase
+        const firebaseAuth = await firebase.auth();
+        const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password);
+        const result = await createUser;
+
+        //get user collection and the specific doc by id
+        const database = db.collection("users").doc(result.user.uid);
+        //set data for user
+        await database.set({
+          firstName: this.firstName,
+          lastName: this.lastName,
+          username: this.username,
+          email: this.email
+        });
+
+        //route user to homepage
+        this.$router.push({ name: 'Home' });
+
+        return;
+      }
+
+      this.error = true;
+      this.errorMsg = "Please fill out all the fields!";
+    }
+  }
 }
 </script>
 
