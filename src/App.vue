@@ -11,6 +11,8 @@
 <script>
 import Navigation from "./components/Navigation.vue";
 import FooterNav from "./components/FooterNav.vue";
+import firebase from 'firebase/app'
+import 'firebase/auth';
 
 export default {
   name: "app",
@@ -21,6 +23,15 @@ export default {
     };
   },
   created() {
+    //Tell the store if there is a user or not when the auth state changes
+    firebase.auth().onAuthStateChanged((user) => {
+      this.$store.commit('updateUser', user);
+      //if we do have a user logged in...
+      if (user) {
+        //get the current user's info
+        this.$store.dispatch('getCurrentUser');
+      }
+    });
     this.toggleNavBar();
   },
   mounted() {},
