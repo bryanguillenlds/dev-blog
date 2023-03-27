@@ -47,21 +47,17 @@ export default {
     Loading,
   },
   methods: {
-    resetPassword() {
-      this.loading = true;
-      firebase
-        .auth()
-        .sendPasswordResetEmail(this.email)
-        .then(() => {
-          this.modalMessage = "If your account exists, you will receive an email";
-          this.loading = false;
-          this.modalActive = true;
-        })
-        .catch((err) => {
-          this.modalMessage = err.message;
-          this.loading = false;
-          this.modalActive = true;
-        });
+    async resetPassword() {
+      try {
+        this.loading = true;
+        await firebase.auth().sendPasswordResetEmail(this.email);
+        this.modalMessage = "If your account exists, you will receive an email";
+      } catch (err) {
+        this.modalMessage = err.message;
+      } finally {
+        this.loading = false;
+        this.modalActive = true;
+      }
     },
     closeModal() {
       this.modalActive = !this.modalActive;
