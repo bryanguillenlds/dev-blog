@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="right">
-        <p>&copy; Copyright 2022 All Rights Reserved</p>
+        <p>&copy; Copyright {{ currentYear }} All Rights Reserved</p>
       </div>
     </div>
   </footer>
@@ -57,9 +57,12 @@ export default {
     linkedin,
     twitch
   },
-  data() {
-    return {
-      user: null
+  computed: {
+    user() {
+      return this.$store.state.user;
+    },
+    currentYear() {
+      return new Date().getFullYear();
     }
   },
 }

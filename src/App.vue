@@ -24,6 +24,7 @@ export default {
   },
   created() {
     //Tell the store if there is a user or not when the auth state changes
+    //firebase returns either true or false
     firebase.auth().onAuthStateChanged((user) => {
       this.$store.commit('updateUser', user);
       //if we do have a user logged in...

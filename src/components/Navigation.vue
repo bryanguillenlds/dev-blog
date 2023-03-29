@@ -12,8 +12,40 @@
           <router-link class="link" to="#">Projects</router-link>
           <router-link class="link" :to="{ name: 'Blogs'}">Blogs</router-link>
           <router-link class="link" to="#">Create Post</router-link>
-          <router-link class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
+          <router-link v-if="!user" class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
         </ul>
+        <div v-if="user" @click="toggleProfileMenu" class="profile" ref="profile">
+          <span>{{ this.$store.state.profileInitials }}</span>
+          <div v-show="showProfileMenu" class="profile-menu">
+            <div class="info">
+              <p class="initials">{{ this.$store.state.profileInitials }}</p>
+              <div class="right">
+                <p>{{ this.$store.state.profileFirstName }} {{ this.$store.state.profileLastName }}</p>
+                <p>{{ this.$store.state.profileUsername }}</p>
+                <p>{{ this.$store.state.profileEmail }}</p>
+              </div>
+            </div>
+
+            <div class="options">
+              <div class="option">
+                <router-link class="option" to="#">
+                  <userIcon class="icon" />
+                  <p>Profile</p>
+                </router-link>
+              </div>
+              <div class="option">
+                <router-link class="option" to="#">
+                  <adminIcon class="icon" />
+                  <p>Admin</p>
+                </router-link>
+              </div>
+              <div @click="signOut" class="option">
+                <signOutIcon class="icon" />
+                <p>Sign Out</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
     <menuIcon @click="toggleMobileNav" class="menu-icon" v-show="mobile"/>
@@ -23,7 +55,7 @@
         <router-link class="link" to="#">Projects</router-link>
         <router-link class="link" :to="{ name: 'Blogs'}">Blogs</router-link>
         <router-link class="link" to="#">Create Post</router-link>
-        <router-link class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
+        <router-link v-if="!user" class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
       </ul>
     </transition>
   </header>
@@ -31,13 +63,24 @@
 
 <script>
 import menuIcon from "../../src/assets/Icons/bars-regular.svg";
+import userIcon from "../../src/assets/Icons/user-alt-light.svg";
+import adminIcon from "../../src/assets/Icons/user-crown-light.svg";
+import signOutIcon from "../../src/assets/Icons/sign-out-alt-regular.svg";
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+
 export default {
   name: "navigation",
   components: {
     menuIcon,
+    userIcon,
+    adminIcon,
+    signOutIcon
   },
   data() {
     return {
+      showProfileMenu: null,
       mobile: null,
       mobileNav: null,
       windowWidth: null
@@ -49,6 +92,11 @@ export default {
     window.addEventListener('resize', this.checkScreen);
     // also check the screen when the component is first created
     this.checkScreen();
+  },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
   },
   methods: {
     checkScreen() {
@@ -63,6 +111,16 @@ export default {
     },
     toggleMobileNav() {
       this.mobileNav = !this.mobileNav;
+    },
+    toggleProfileMenu(e) {
+      //only toggle if the click happened in the profile reference
+      if (e.target === this.$refs.profile) {
+        this.showProfileMenu = !this.showProfileMenu;
+      }
+    },
+    signOut() {
+      firebase.auth().signOut(); //sign out using firebase
+      window.location.reload(); //reload page after signing out
     }
   },
 };
@@ -118,6 +176,91 @@ header {
 
         .link:last-child {
           margin-right: 0;
+        }
+      }
+
+      .profile {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: white;
+        background-color: #303030;
+
+        span {
+          pointer-events: none; //to bypass issue with clicking here and not opening profile-menu dropdown
+        }
+
+        .profile-menu {
+          position: absolute;
+          top: 60px;
+          right: 0;
+          width: 250px;
+          background-color: #303030;
+          box-shadow: 0 4px 6px -1px #1eb86333, 0 2px 4px -1px #1eb8635d;
+
+          .info {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid white;
+
+            .initials {
+              position: initial;
+              width: 40px;
+              height: 40px;
+              background-color: white;
+              color: #303030;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+            }
+
+            .right {
+              flex: 1;
+              margin-left: 24px;
+
+              p:nth-child(1) {
+                font-size: 14px;
+              }
+
+              p:nth-child(2),
+              p:nth-child(3) {
+                font-size: 12px;
+              }
+            }
+          }
+
+          .options {
+            padding: 15px;
+
+            .option {
+              text-decoration: none;
+              color: white;
+              display: flex;
+              align-items: center;
+              margin-bottom: 12px;
+
+              .icon {
+                width: 18px;
+                height: auto;
+              }
+
+              p {
+                font-size: 14px;
+                margin-left: 12px;
+              }
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
         }
       }
     }
