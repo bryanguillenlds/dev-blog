@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="right">
-        <p>&copy; Copyright 2023 All Rights Reserved</p>
+        <p>&copy; Copyright {{ currentYear }} All Rights Reserved</p>
       </div>
     </div>
   </footer>
@@ -60,6 +60,9 @@ export default {
   computed: {
     user() {
       return this.$store.state.user;
+    },
+    currentYear() {
+      return new Date().getFullYear();
     }
   },
 }
