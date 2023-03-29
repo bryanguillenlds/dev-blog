@@ -12,9 +12,9 @@
           <router-link class="link" to="#">Projects</router-link>
           <router-link class="link" :to="{ name: 'Blogs'}">Blogs</router-link>
           <router-link class="link" to="#">Create Post</router-link>
-          <router-link class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
+          <router-link v-if="!user" class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
         </ul>
-        <div @click="toggleProfileMenu" class="profile" ref="profile">
+        <div v-if="user" @click="toggleProfileMenu" class="profile" ref="profile">
           <span>{{ this.$store.state.profileInitials }}</span>
           <div v-show="showProfileMenu" class="profile-menu">
             <div class="info">
@@ -39,11 +39,9 @@
                   <p>Admin</p>
                 </router-link>
               </div>
-              <div class="option">
-                <router-link class="option" to="#">
-                  <signOutIcon class="icon" />
-                  <p>Sign Out</p>
-                </router-link>
+              <div @click="signOut" class="option">
+                <signOutIcon class="icon" />
+                <p>Sign Out</p>
               </div>
             </div>
           </div>
@@ -57,7 +55,7 @@
         <router-link class="link" to="#">Projects</router-link>
         <router-link class="link" :to="{ name: 'Blogs'}">Blogs</router-link>
         <router-link class="link" to="#">Create Post</router-link>
-        <router-link class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
+        <router-link v-if="!user" class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
       </ul>
     </transition>
   </header>
@@ -68,6 +66,8 @@ import menuIcon from "../../src/assets/Icons/bars-regular.svg";
 import userIcon from "../../src/assets/Icons/user-alt-light.svg";
 import adminIcon from "../../src/assets/Icons/user-crown-light.svg";
 import signOutIcon from "../../src/assets/Icons/sign-out-alt-regular.svg";
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
 
 export default {
@@ -93,6 +93,11 @@ export default {
     // also check the screen when the component is first created
     this.checkScreen();
   },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
   methods: {
     checkScreen() {
       this.windowWidth = window.innerWidth;
@@ -112,6 +117,10 @@ export default {
       if (e.target === this.$refs.profile) {
         this.showProfileMenu = !this.showProfileMenu;
       }
+    },
+    signOut() {
+      firebase.auth().signOut(); //sign out using firebase
+      window.location.reload(); //reload page after signing out
     }
   },
 };
