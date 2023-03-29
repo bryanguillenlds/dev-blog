@@ -14,9 +14,9 @@
           <router-link class="link" to="#">Create Post</router-link>
           <router-link class="link" :to="{ name: 'Login'}">Sign In/Sign Up</router-link>
         </ul>
-        <div class="profile" ref="profile">
+        <div @click="toggleProfileMenu" class="profile" ref="profile">
           <span>{{ this.$store.state.profileInitials }}</span>
-          <div class="profile-menu">
+          <div v-show="showProfileMenu" class="profile-menu">
             <div class="info">
               <p class="initials">{{ this.$store.state.profileInitials }}</p>
               <div class="right">
@@ -80,6 +80,7 @@ export default {
   },
   data() {
     return {
+      showProfileMenu: null,
       mobile: null,
       mobileNav: null,
       windowWidth: null
@@ -105,6 +106,12 @@ export default {
     },
     toggleMobileNav() {
       this.mobileNav = !this.mobileNav;
+    },
+    toggleProfileMenu(e) {
+      //only toggle if the click happened in the profile reference
+      if (e.target === this.$refs.profile) {
+        this.showProfileMenu = !this.showProfileMenu;
+      }
     }
   },
 };
@@ -175,6 +182,10 @@ header {
         color: white;
         background-color: #303030;
 
+        span {
+          pointer-events: none; //to bypass issue with clicking here and not opening profile-menu dropdown
+        }
+
         .profile-menu {
           position: absolute;
           top: 60px;
@@ -234,6 +245,10 @@ header {
               p {
                 font-size: 14px;
                 margin-left: 12px;
+              }
+
+              &:last-child {
+                margin-bottom: 0;
               }
             }
           }
