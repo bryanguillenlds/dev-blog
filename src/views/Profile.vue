@@ -5,7 +5,7 @@
       <h2>Account Settings</h2>
       <div class="profile-info">
         <div class="initials">{{ $store.state.profileInitials }}</div>
-        <div class="admin-badge">
+        <div v-if="admin" class="admin-badge">
           <adminIcon class="icon" />
           <span>admin</span>
         </div>
@@ -48,6 +48,9 @@ export default {
     };
   },
   computed: {
+    admin() {
+      return this.$store.state.profileAdmin;
+    },
     //we are binding this to v-model so we need getters
     //for the computed props
     firstName: {

@@ -28,15 +28,15 @@ export default {
   },
   methods: {
     async addAdmin() {
-      const addAdmin = await firebase.functions().httpsCallable("addAdminRole");
-      const result = await addAdmin({ email: this.adminEmail });
-      this.functionMsg = result.data.message;
+      const addAdmin = await firebase.functions().httpsCallable("addAdminRole"); //reach out to function
+      const result = await addAdmin({ email: this.adminEmail }); //call function
+      this.functionMsg = result.data.message; //get message
     },
   },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .admin {
   .container {
     max-width: 1000px;
@@ -61,6 +61,8 @@ export default {
 
       span {
         font-size: 14px;
+        font-weight: bold;
+        color: #1eb863;
       }
 
       .input {

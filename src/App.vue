@@ -25,12 +25,12 @@ export default {
   created() {
     //Tell the store if there is a user or not when the auth state changes
     //firebase returns either true or false
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       this.$store.commit('updateUser', user);
       //if we do have a user logged in...
       if (user) {
         //get the current user's info
-        this.$store.dispatch('getCurrentUser');
+        this.$store.dispatch('getCurrentUser', user);
       }
     });
     this.toggleNavBar();

@@ -16,6 +16,7 @@ export default new Vuex.Store({
     ],
     editPost: null,
     user: null,
+    profileAdmin: null,
     profileEmail: null,
     profileFirstName: null,
     profileLastName: null,
@@ -50,16 +51,25 @@ export default new Vuex.Store({
     },
     changeUsername(state, payload) {
       state.profileUsername = payload;
+    },
+    setProfileAdmin(state, payload) {
+      state.profileAdmin = payload;
     }
   },
   actions: {
-    async getCurrentUser({commit}) {
+    async getCurrentUser({commit}, user) {
       //get the current user doc from firebase, passing the current user id
       const database = await db.collection('users').doc(firebase.auth().currentUser.uid);
       const dbResult = await database.get();
 
       commit('setProfileInfo', dbResult);
       commit('setProfileInitials');
+
+      //get token to determine if user is admin
+      const token = await user.getIdTokenResult(true); //need true param to force token refresh
+      const admin = await token.claims.admin;
+      console.log('HERE: ', token);
+      commit('setProfileAdmin', admin);
     },
     async updateUserSettings({commit, state}) {
       const database = await db.collection('users').doc(state.profileId);
