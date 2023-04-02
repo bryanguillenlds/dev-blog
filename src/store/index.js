@@ -75,7 +75,7 @@ export default new Vuex.Store({
       //get token to determine if user is admin
       const token = await user.getIdTokenResult(true); //need true param to force token refresh
       const admin = await token.claims.admin;
-      
+
       commit('setProfileAdmin', admin);
     },
     async updateUserSettings({commit, state}) {
