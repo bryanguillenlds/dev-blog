@@ -14,6 +14,13 @@ export default new Vuex.Store({
       { blogTitle: "Sample Blog #3", blogCoverPhoto: "stock-3", blogDate: "May 30, 2022" },
       { blogTitle: "Sample Blog #4", blogCoverPhoto: "stock-4", blogDate: "May 30, 2022" }
     ],
+    blogPosts: [],
+    // postLoaded: null,
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
     editPost: null,
     user: null,
     profileAdmin: null,
@@ -68,7 +75,7 @@ export default new Vuex.Store({
       //get token to determine if user is admin
       const token = await user.getIdTokenResult(true); //need true param to force token refresh
       const admin = await token.claims.admin;
-      console.log('HERE: ', token);
+      
       commit('setProfileAdmin', admin);
     },
     async updateUserSettings({commit, state}) {
