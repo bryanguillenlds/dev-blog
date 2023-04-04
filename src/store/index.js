@@ -14,6 +14,13 @@ export default new Vuex.Store({
       { blogTitle: "Sample Blog #3", blogCoverPhoto: "stock-3", blogDate: "May 30, 2022" },
       { blogTitle: "Sample Blog #4", blogCoverPhoto: "stock-4", blogDate: "May 30, 2022" }
     ],
+    blogPosts: [],
+    // postLoaded: null,
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
     editPost: null,
     user: null,
     profileAdmin: null,
@@ -25,6 +32,21 @@ export default new Vuex.Store({
     profileInitials: null
   },
   mutations: {
+    newBlogPost(state, payload) {
+      state.blogHTML = payload;
+    },
+    updateBlogTitle(state, payload) {
+      state.blogTitle = payload;
+    },
+    fileNameChange(state, payload) {
+      state.blogPhotoName = payload;
+    },
+    createFileURL(state, payload) {
+      state.blogPhotoFileURL = payload;
+    },
+    openPhotoPreview(state) {
+      state.blogPhotoPreview = !state.blogPhotoPreview;
+    },
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
@@ -68,7 +90,7 @@ export default new Vuex.Store({
       //get token to determine if user is admin
       const token = await user.getIdTokenResult(true); //need true param to force token refresh
       const admin = await token.claims.admin;
-      console.log('HERE: ', token);
+
       commit('setProfileAdmin', admin);
     },
     async updateUserSettings({commit, state}) {
