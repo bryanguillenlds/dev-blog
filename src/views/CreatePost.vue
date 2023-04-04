@@ -9,7 +9,7 @@
         <input type="text" placeholder="Enter Blog Title" v-model="blogTitle">
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
-          <input type="file" ref="blogPhoto" id="blog-photo" accept=".png, .jpg, .jpeg">
+          <input @change="fileChange" type="file" ref="blogPhoto" id="blog-photo" accept=".png, .jpg, .jpeg">
           <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL}">Preview Cover</button>
           <span>File Chosen: {{ this.$store.state.blogPhotoName }}</span>
         </div>
@@ -41,6 +41,7 @@ export default {
 
   data() {
     return {
+      file: null,
       error: null,
       errorMsg: null,
       editorSettings: {
@@ -48,6 +49,47 @@ export default {
           imageResize: {}
         }
       }
+    }
+  },
+
+  computed: {
+    profileId() {
+      return this.$store.state.profileId;
+    },
+
+    blogCoverPhotoName() {
+      return this.$store.state.blogPhotoName;
+    },
+
+    blogTitle: {
+      get() {
+        return this.$store.state.blogTitle;
+      },
+      set(payload) {
+        this.$store.commit('updateBlogTitle', payload);
+      }
+    },
+
+    blogHTML: {
+      get() {
+        return this.$store.state.blogHTML;
+      },
+      set(payload) {
+        this.$store.commit('newBlogPost', payload);
+      }
+    }
+  },
+
+  methods: {
+    fileChange() {
+      this.file = this.$refs.blogPhoto.files[0]; //get file from input
+
+      //commit file name change
+      const fileName = this.file.name;
+      this.$store.commit('fileNameChange', fileName);
+
+      //commit the file url
+      this.$store.commit('createFileURL', URL.createObjectURL(this.file));
     }
   }
 };
