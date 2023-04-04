@@ -1,5 +1,6 @@
 <template>
   <div class="create-post">
+    <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview"/>
     <div class="container">
       <div class="err-message" :class="{ invisible: !error}">
         <p><span>Error:</span>{{ this.errorMsg }}</p>
@@ -10,7 +11,7 @@
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
           <input @change="fileChange" type="file" ref="blogPhoto" id="blog-photo" accept=".png, .jpg, .jpeg">
-          <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL}">Preview Cover</button>
+          <button @click="openPreview" class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL}">Preview Cover</button>
           <span>File Chosen: {{ this.$store.state.blogPhotoName }}</span>
         </div>
       </div>
@@ -30,6 +31,7 @@
 <script>
 
 import Quill from "quill";
+import BlogCoverPreview from "@/components/BlogCoverPreview.vue";
 
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
@@ -37,7 +39,7 @@ Quill.register("modules/imageResize", ImageResize);
 
 export default {
   name: 'CreatePost',
-  components: {},
+  components: {BlogCoverPreview},
 
   data() {
     return {
@@ -90,6 +92,10 @@ export default {
 
       //commit the file url
       this.$store.commit('createFileURL', URL.createObjectURL(this.file));
+    },
+
+    openPreview() {
+      this.$store.commit('openPhotoPreview');
     }
   }
 };
