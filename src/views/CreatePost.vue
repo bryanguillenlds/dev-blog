@@ -22,7 +22,7 @@
 
       <div class="blog-actions">
         <button>Publish Article</button>
-        <router-link class="router-button" to="#">Post Preview</router-link>
+        <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
       </div>
     </div>
   </div>
