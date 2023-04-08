@@ -1,6 +1,9 @@
 <template>
   <div class="create-post">
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview"/>
+
+    <Loading v-show="loading" />
+
     <div class="container">
       <div class="err-message" :class="{ invisible: !error}">
         <p><span>Error:</span>{{ this.errorMsg }}</p>
@@ -21,7 +24,7 @@
       </div>
 
       <div class="blog-actions">
-        <button>Publish Article</button>
+        <button @click="uploadBlog">Publish Article</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
       </div>
     </div>
@@ -33,6 +36,8 @@ import Quill from "quill";
 import BlogCoverPreview from "@/components/BlogCoverPreview.vue";
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import db from '../firebase/firebaseInit.js';
+import Loading from "@/components/Loading.vue";
 
 window.Quill = Quill;
 const ImageResize = require("quill-image-resize-module").default;
@@ -40,7 +45,7 @@ Quill.register("modules/imageResize", ImageResize);
 
 export default {
   name: 'CreatePost',
-  components: {BlogCoverPreview},
+  components: {Loading, BlogCoverPreview},
 
   data() {
     return {
@@ -51,7 +56,8 @@ export default {
         modules: {
           imageResize: {}
         }
-      }
+      },
+      laoding: null,
     }
   },
 
@@ -60,7 +66,7 @@ export default {
       return this.$store.state.profileId;
     },
 
-    blogCoverPhotoName() {
+    blogPhotoName() {
       return this.$store.state.blogPhotoName;
     },
 
@@ -115,6 +121,70 @@ export default {
         Editor.insertEmbed(cursorLocation, "image", downloadURL);
         resetUploader(); //reset the uploader
       })
+    },
+
+    uploadBlog() {
+      //validate
+      if (this.blogTitle.length !== 0 && this.blogHTML.length !== 0) {
+        //if there is a file, store it
+        if (this.file) {
+          //set loading status
+          this.loading = true;
+
+          //get ref to storage and document where you want to store the photo
+          const storageRef = firebase.storage().ref();
+          const docRef = storageRef.child(`documents/BlogCoverPhoto/${this.$store.state.blogPhotoName}`);
+          //store it
+          docRef.put(this.file).on('state_changed', (snapshot) => {
+            console.log(snapshot)
+          }, (err) => {
+            console.log(err);
+            this.loading = false;
+          }, async () => {
+            const downloadURL = await docRef.getDownloadURL(); //get url for post
+            const timestamp = await Date.now(); //create a timestamp
+            const dataBase = await db.collection('blogPosts').doc(); //ref to db
+
+            //send to db
+            await dataBase.set({
+              blogId: dataBase.id,
+              blogHTML: this.blogHTML,
+              blogCoverPhoto: downloadURL,
+              blogCoverPhotoName: this.blogPhotoName,
+              blogTitle: this.blogTitle,
+              profileId: this.profileId,
+              date: timestamp
+            });
+
+            this.loading = false;
+            //redirect to blog view
+            this.$router.push({ name: 'ViewBlog' })
+          });
+          return;
+        }
+
+        //error handling
+        this.error = true;
+        this.errorMsg = 'Please make sure you uploaded a cover photo';
+
+        //clear error status
+        setTimeout(() => {
+          this.error = false;
+        }, 5000);
+
+        return;
+      }
+
+      //error handling
+      this.error = true;
+      this.errorMsg = 'Please ensure blog title and blog post has been filled';
+
+      //clear error status
+      setTimeout(() => {
+        this.error = false;
+      }, 5000);
+
+      return;
     }
   }
 };
