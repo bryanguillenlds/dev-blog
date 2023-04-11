@@ -33,7 +33,9 @@ export default {
         this.$store.dispatch('getCurrentUser', user);
       }
     });
-    this.toggleNavBar();
+    this.toggleNavBar(); //toggle nav bar based on route
+
+    this.$store.dispatch('getPost'); //get blog post data
   },
   mounted() {},
   methods: {

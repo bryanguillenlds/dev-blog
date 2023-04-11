@@ -8,14 +8,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    sampleBlogCards: [
-      { blogTitle: "Sample Blog #1", blogCoverPhoto: "stock-1", blogDate: "May 30, 2022" },
-      { blogTitle: "Sample Blog #2", blogCoverPhoto: "stock-2", blogDate: "May 30, 2022" },
-      { blogTitle: "Sample Blog #3", blogCoverPhoto: "stock-3", blogDate: "May 30, 2022" },
-      { blogTitle: "Sample Blog #4", blogCoverPhoto: "stock-4", blogDate: "May 30, 2022" }
-    ],
     blogPosts: [],
-    // postLoaded: null,
+    postLoaded: null,
     blogHTML: "Write your blog title here...",
     blogTitle: "",
     blogPhotoName: "",
@@ -93,6 +87,32 @@ export default new Vuex.Store({
 
       commit('setProfileAdmin', admin);
     },
+
+    async getPost({state}) {
+      //ref to db
+      const database = await db.collection('blogPosts').orderBy('date', 'desc');
+      const dbResults = await database.get(); //return arr of results
+
+      dbResults.forEach(doc => {
+        //check if blog has already been added to state before,
+        //if not...add it
+        if (!state.blogPosts.some(post => post.blogID === doc.id)) {
+          const data = {
+            blogID: doc.data().blogID,
+            blogHTML: doc.data().blogHTML,
+            blogCoverPhoto: doc.data().blogCoverPhoto,
+            blogTitle: doc.data().blogTitle,
+            blogDate: doc.data().date
+          };
+
+          //push it to state blog posts
+          state.blogPosts.push(data);
+        }
+      });
+
+      state.postLoaded = true; //set loaded state
+    },
+
     async updateUserSettings({commit, state}) {
       const database = await db.collection('users').doc(state.profileId);
       await database.update({
@@ -101,6 +121,15 @@ export default new Vuex.Store({
         username: state.profileUsername
       });
       commit('setProfileInitials');
+    }
+  },
+  getters: {
+    blogPostFeed(state) {
+      return state.blogPosts.slice(0, 2); //retrieve first two posts
+    },
+
+    blogPostsCards(state) {
+      return state.blogPosts.slice(2, 6); //retrieve 4 more posts
     }
   },
   modules: {
