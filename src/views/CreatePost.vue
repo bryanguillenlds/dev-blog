@@ -156,9 +156,11 @@ export default {
               date: timestamp
             });
 
+            await this.$store.dispatch('getPost'); //get post from db as soon as we post it
+
             this.loading = false;
             //redirect to blog view
-            this.$router.push({ name: 'ViewBlog' })
+            await this.$router.push({ name: 'ViewBlog', params: { blogid: dataBase.id} })
           });
           return;
         }
