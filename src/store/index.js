@@ -70,6 +70,9 @@ export default new Vuex.Store({
     },
     setProfileAdmin(state, payload) {
       state.profileAdmin = payload;
+    },
+    filterBlogPost(state, payload) {
+      state.blogPosts = state.blogPosts.filter(post => post.blogID !== payload);
     }
   },
   actions: {
@@ -111,6 +114,16 @@ export default new Vuex.Store({
       });
 
       state.postLoaded = true; //set loaded state
+    },
+
+    async deletePost({commit}, payload) {
+      //retrieve post reference from db
+      const post = await db.collection('blogPosts').doc(payload);
+
+      await post.delete(); //delete from db
+
+      //commit to filter out the deleted post
+      commit('filterBlogPost', payload);
     },
 
     async updateUserSettings({commit, state}) {
